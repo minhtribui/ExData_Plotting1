@@ -1,0 +1,134 @@
+
+## Assignment 1
+
+## 0 Preparation step
+# Create a folder called assignment 1:
+```{r}
+if(!file.exists("./assignment1")){dir.create("./assignment1")}
+```
+
+# Download and unzip file:
+```{r}
+fileurl <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip"
+download.file(fileurl, destfile = "./assignment1/assignment.zip")
+unzip(zipfile = "./assignment1/assignment.zip", exdir = "./assignment1")
+```
+
+# Read the file into R and convert Date and Time variable into Date and Time format, the remaining variable to numeric format
+```{r}
+library(readr)
+setwd("D:/Statistics/R/R data/Exploratory_data_assignment1/assignment1")
+assignment <- read.csv("household_power_consumption.txt", sep = ";", stringsAsFactors = FALSE) 
+```
+
+# Converting formate of Date and create new variable call DateTime in Assignment dataframe
+```{r}
+assignment$Date <- as.Date(assignment$Date, format = "%d/%m/%Y")
+assignment$DateTime <- strptime(paste(assignment$Date,assignment$Time),format = "%Y-%m-%d %H:%M:%S")
+```
+
+# Choose the data from the dates 2007-02-01 and 2007-02-02
+```{r}
+assignment <- assignment[assignment$Date >= "2007-2-1" & assignment$Date <= "2007-2-2",]
+```
+
+# Convert the other variable into numeric class
+```{r}
+assignment[,3] <- as.numeric(assignment[,3])
+assignment[,4] <- as.numeric(assignment[,4])
+assignment[,5] <- as.numeric(assignment[,5])
+assignment[,6] <- as.numeric(assignment[,6])
+assignment[,7] <- as.numeric(assignment[,7])
+assignment[,8] <- as.numeric(assignment[,8])
+lapply(assignment,class)
+```
+
+# 1. Constructing plot 1 and save
+```{r}
+with(assignment, hist(assignment$Global_active_power, xlab = "Global Active Power(kilowatts)", col = "red", main = "Global Active Power"))
+
+dev.copy(device = png, width = 480, height = 480, file = "Plot1.png")
+```
+
+# 2. Constructing plot 2 and save
+```{r}
+with(assignment, plot(DateTime, Global_active_power, type = "l", xlab = "", ylab = "Global Active Power (kilowatts)", xaxt = "n"))
+
+axis(side = 1, at = c(as.numeric(assignment$DateTime[1]), as.numeric(assignment$DateTime[1441]), as.numeric(assignment$DateTime[2880])), labels = c("Thu","Fri","Sat"))
+
+dev.copy(device = png, width = 480, height = 480, file = "Plot2.png")
+```
+
+# 3. Constructing plot 3 and save
+
+```{r}
+with(assignment, plot(DateTime, Sub_metering_1, type = "n", xaxt = "n", xlab = "", ylab = "Energy sub metering"))
+
+axis(side = 1, at = c(as.numeric(assignment$DateTime[1]), as.numeric(assignment$DateTime[1441]), as.numeric(assignment$DateTime[2880])), labels = c("Thu","Fri","Sat"))
+
+with(assignment, lines(DateTime, Sub_metering_1))
+
+with(assignment, lines(DateTime, Sub_metering_2, col = "red"))
+
+with(assignment, lines(DateTime, Sub_metering_3, col = "blue"))
+
+legend("topright", lty = 1, col=c("black", "red", "blue"), legend = c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))
+
+dev.copy(device = png, width = 480, height = 480, file = "Plot3.png")      
+```
+
+
+# 4. Constructing plot 4 and save
+# Creating cluster 2x2
+```{r}
+      par(mfrow = c(2,2))
+```
+
+# Creating top-left plot 
+```{r}
+      with(assignment, plot(DateTime, Global_active_power, type = "l", xlab = "", ylab = "Global Active Power", xaxt = "n"))
+      axis(side = 1, at = c(as.numeric(assignment$DateTime[1]),
+                            as.numeric(assignment$DateTime[1441]),
+                            as.numeric(assignment$DateTime[2880])),labels = c("Thu","Fri","Sat"))
+```
+
+# Creating top-right plot
+```{r}
+ with(assignment, plot(DateTime, Voltage, type = "l", xlab = "datetime", ylab = "Voltage", xaxt = "n"))
+      axis(side = 1, at = c(as.numeric(assignment$DateTime[1]),
+                            as.numeric(assignment$DateTime[1441]),
+                            as.numeric(assignment$DateTime[2880])),labels = c("Thu","Fri","Sat"))
+```
+
+# Creating bottom-left plot
+```{r}
+ with(assignment, plot(DateTime, Sub_metering_1, type = "n", xaxt = "n",xlab = "", ylab = "Energy sub metering"))
+
+axis(side = 1, at = c(as.numeric(assignment$DateTime[1]),as.numeric(assignment$DateTime[1441]),as.numeric(assignment$DateTime[2880])),labels = c("Thu","Fri","Sat"))
+
+with(assignment, lines(DateTime, Sub_metering_1))
+
+with(assignment, lines(DateTime, Sub_metering_2, col = "red"))
+
+with(assignment, lines(DateTime, Sub_metering_3, col = "blue"))
+
+legend("topright",lty = 1, col = c("black","red","blue"),legend = c("Sub_metering_1","Sub_metering_2","Sub_metering_3"))
+```
+
+# Creating bottom right plot
+```{r}
+with(assignment, plot(DateTime, Global_reactive_power, type = "l", xlab = "datetime",ylab = "Global_reactive_power", xaxt = "n"))
+
+axis(side = 1, at = c(as.numeric(assignment$DateTime[1]),as.numeric(assignment$DateTime[1441]),as.numeric(assignment$DateTime[2880])),labels = c("Thu","Fri","Sat"))
+```
+
+# Saving plot
+```{r}
+dev.copy(device = png, width = 480, height = 480, file = "Plot4.png")      
+
+```
+
+# End
+```{r}
+dev.off()
+```
